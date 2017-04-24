@@ -1,0 +1,22 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}{% trans %}Home{% endtrans %}{% endblock %}
+
+{% block body %}
+    {% include 'calendar/_month.html.twig' %}
+{% endblock %}
+{% block javascripts %}
+    {% if is_granted('ROLE_MANAGER') %}
+        {% javascripts '@base_js' %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+        <script type="text/javascript">
+            CalendarHelper.initContextMenu();
+        </script>
+    {% endif %}
+    <script type="text/javascript">
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        })
+    </script>
+{% endblock %}

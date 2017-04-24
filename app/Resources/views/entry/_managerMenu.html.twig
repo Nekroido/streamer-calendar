@@ -1,0 +1,13 @@
+<nav id="context-menu">
+    <ul>
+        <li>
+            <a data-action="approve" data-route="{{ path('approve_entry', {id : '-placeholder-'}) }}"><i class="glyphicon glyphicon-ok"></i> {% trans %}Approve{% endtrans %}</a>
+        </li>
+        <li>
+            <a data-action="edit" data-route="{{ path('edit_entry', {id : '-placeholder-'}) }}"><i class="glyphicon glyphicon-pencil"></i> {% trans %}Edit{% endtrans %}</a>
+        </li>
+        <li>
+            <a data-action="delete" data-route="{{ path('delete_entry', {id : '-placeholder-'}) }}"><i class="glyphicon glyphicon-trash"></i> {% trans %}Delete{% endtrans %}</a>
+        </li>
+    </ul>
+</nav>

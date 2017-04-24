@@ -1,0 +1,163 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}{% trans %}Stream stats{% endtrans %}{% endblock %}
+
+{% block body %}
+    <div class="calendar-actions">
+        <div class="btn-group">
+            <a class="btn btn-primary" href="{{ path('stats', {start: prev|date('U')}) }}"><i
+                        class="glyphicon glyphicon-chevron-left"></i></a>
+            <a class="btn btn-primary" href="{{ path('stats', {start: next|date('U')}) }}"><i
+                        class="glyphicon glyphicon-chevron-right"></i></a>
+        </div>
+        <h4 class="pull-right">Статистика стримов за
+            <time id="date">{{ start|date('d.m.Y') }}</time>
+        </h4>
+    </div>
+    <div id="chart-box">
+        <div class="preloader">
+            <div class="cube cube1"></div>
+            <div class="cube cube2"></div>
+            <div class="cube cube3"></div>
+            <div class="cube cube4"></div>
+            <div class="cube cube5"></div>
+            <div class="cube cube6"></div>
+            <div class="cube cube7"></div>
+            <div class="cube cube8"></div>
+            <div class="cube cube9"></div>
+        </div>
+        <div id="statsChart"></div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {#{% stylesheets '@highcharts_css' filter='cssrewrite' %}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}"/>
+    {% endstylesheets %}#}
+    <link rel="stylesheet" type="text/css" media="screen"
+          href="http://www.highcharts.com/media/com_demo/css/highslide.min.css"/>
+    <style>
+        .highcharts-background, .highcharts-button-box {
+            fill: none;
+        }
+
+        .highcharts-credits {
+            display: none;
+        }
+
+        .highcharts-axis-line {
+            fill: none;
+            stroke: #999999;
+        }
+
+        .highcharts-yaxis .highcharts-axis-line {
+            stroke-width: 0;
+        }
+
+        .highcharts-grid-line {
+            fill: none;
+            stroke: #999999;
+        }
+
+        .highcharts-xaxis-grid .highcharts-grid-line {
+            stroke-width: 0;
+        }
+
+        .highcharts-tick {
+            stroke: #999999;
+        }
+
+        .highcharts-minor-grid-line {
+            stroke: #999999;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {#{% javascripts '@highcharts_js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}#}
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script type="text/javascript">
+        var x = new Date();
+        var currentTimeZoneOffsetInHours = x.getTimezoneOffset() / 60;
+        Highcharts.setOptions({
+            global: {
+                useUTC: false,
+                timezoneOffset: currentTimeZoneOffsetInHours
+            }
+        });
+        var chart = Highcharts.chart('statsChart', {
+            chart: {
+                zoomType: 'x'
+            },
+            title: {
+                text: null
+            },
+            subtitle: {
+                text: 'Кликните и перетащите, чтобы увеличить область'
+            },
+            xAxis: {
+                type: 'datetime'
+            },
+            yAxis: {
+                min: 0, minRange: 1,
+                title: {
+                    text: 'Количество зрителей'
+                }
+            },
+            legend: {
+                enabled: true
+            },
+            plotOptions: {
+                areaspline: {
+                    marker: {
+                        radius: 2
+                    },
+                    lineWidth: 2,
+                    states: {
+                        hover: {
+                            lineWidth: 3
+                        }
+                    },
+                    threshold: null
+                },
+                series: {
+                    tooltip: {
+                        headerFormat: '<span style="font-size: 10px">{point.key}</span><br/>',
+                        pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y} зрителей</b><br/>'
+                    }
+                }
+            }
+        });
+
+        $.getJSON('{{ path('api_stats', {start: start|date('U')}) }}', function (data) {
+            for (var i in data) {
+                chart.addSeries({
+                    type: 'areaspline',
+                    name: data[i].title,
+                    zoneAxis: 'x',
+                    turboThreshold: 0,
+                    fillColor: {
+                        linearGradient: {
+                            x1: 0,
+                            y1: 0,
+                            x2: 0,
+                            y2: 1
+                        },
+                        stops: [
+                            [0, data[i].color],
+                            [1, Highcharts.Color(data[i].color).setOpacity(0).get('rgba')]
+                        ]
+                    },
+                    color: data[i].color,
+                    zones: data[i].zones,
+                    data: data[i].data
+                });
+            }
+            chart.redraw();
+            $('#chart-box .preloader').fadeOut();
+        });
+    </script>
+{% endblock %}

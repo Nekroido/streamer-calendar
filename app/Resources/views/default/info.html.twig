@@ -1,0 +1,24 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}{% trans %}Information for streamers{% endtrans %}{% endblock %}
+
+{% block body %}
+    {% if app.user.personalStreamkey %}
+        <div class="panel panel-primary">
+            <div class="panel-heading">{% trans %}Personal Streamkey{% endtrans %}</div>
+            <div class="panel-body">
+                {{ app.user.personalStreamkey }}
+            </div>
+        </div>
+    {% endif %}
+    {% if personal_streamkeys_only == false or app.user.canSeeGlobalStreamkey %}
+        {% for entry in info %}
+            <div class="panel panel-primary">
+                <div class="panel-heading">{{ entry.description }}</div>
+                <div class="panel-body">
+                    {{ entry.value|nl2br }}
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends 'SonataAdminBundle:CRUD:base_show_field.html.twig' %}
+
+{% block field %}
+    <div>
+        {{ url('user_registration', {token: value}) }}
+    </div>
+{% endblock %}

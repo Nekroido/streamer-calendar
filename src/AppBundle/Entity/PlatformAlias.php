@@ -1,0 +1,96 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * PlatformAlias
+ *
+ * @ORM\Table(name="platform_alias")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\PlatformAliasRepository")
+ */
+class PlatformAlias
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer", options={"unsigned"=true})
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="platformId", type="integer", options={"unsigned"=true})
+     */
+    private $platformId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="alias", type="string", length=255, unique=true)
+     */
+    private $alias;
+
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set platformId
+     *
+     * @param integer $platformId
+     *
+     * @return PlatformAlias
+     */
+    public function setPlatformId($platformId)
+    {
+        $this->platformId = $platformId;
+
+        return $this;
+    }
+
+    /**
+     * Get platformId
+     *
+     * @return int
+     */
+    public function getPlatformId()
+    {
+        return $this->platformId;
+    }
+
+    /**
+     * Set alias
+     *
+     * @param string $alias
+     *
+     * @return PlatformAlias
+     */
+    public function setAlias($alias)
+    {
+        $this->alias = $alias;
+
+        return $this;
+    }
+
+    /**
+     * Get alias
+     *
+     * @return string
+     */
+    public function getAlias()
+    {
+        return $this->alias;
+    }
+}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru-RU" prefix="og: http://ogp.me/ns#">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% set _blockTitle = block('title') %}
+    <title>{% block title %}{% endblock %}{% if _blockTitle is not empty %} | {% endif %}Система стримов Kraken&#039;s Lair</title>
+    <!--
+    __/\\\________/\\\__________________________________________________________________________/\\\\_________________________/\\\________________________________________________
+     _\/\\\_____/\\\//________________________________/\\\______________________________________\///\\________________________\/\\\________________________________________________
+      _\/\\\__/\\\//__________________________________\/\\\_______________________________________/\\/_________________________\/\\\_____________________________/\\\_______________
+       _\/\\\\\\//\\\______/\\/\\\\\\\___/\\\\\\\\\____\/\\\\\\\\________/\\\\\\\\___/\\/\\\\\\___\//_____/\\\\\\\\\\___________\/\\\______________/\\\\\\\\\____\///___/\\/\\\\\\\__
+        _\/\\\//_\//\\\____\/\\\/////\\\_\////////\\\___\/\\\////\\\____/\\\/////\\\_\/\\\////\\\_________\/\\\//////____________\/\\\_____________\////////\\\____/\\\_\/\\\/////\\\_
+         _\/\\\____\//\\\___\/\\\___\///____/\\\\\\\\\\__\/\\\\\\\\/____/\\\\\\\\\\\__\/\\\__\//\\\________\/\\\\\\\\\\___________\/\\\_______________/\\\\\\\\\\__\/\\\_\/\\\___\///__
+          _\/\\\_____\//\\\__\/\\\__________/\\\/////\\\__\/\\\///\\\___\//\\///////___\/\\\___\/\\\________\////////\\\___________\/\\\______________/\\\/////\\\__\/\\\_\/\\\_________
+           _\/\\\______\//\\\_\/\\\_________\//\\\\\\\\/\\_\/\\\_\///\\\__\//\\\\\\\\\\_\/\\\___\/\\\_________/\\\\\\\\\\___________\/\\\\\\\\\\\\\\\_\//\\\\\\\\/\\_\/\\\_\/\\\_________
+            _\///________\///__\///___________\////////\//__\///____\///____\//////////__\///____\///_________\//////////____________\///////////////___\////////\//__\///__\///__________
+    -->
+    {% block stylesheets %}{% endblock %}
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.png') }}"/>
+    {% stylesheets '@bootstrap_css' filter='cssrewrite' %}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+    {% stylesheets '@base_css' '@calendar_css' filter='cssrewrite' %}
+    <link rel="stylesheet" type="text/css" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+    <base target="_top">
+    <script src="//vk.com/js/api/xd_connection.js?2" type="text/javascript"></script>
+</head>
+<body class="bare">
+<div id="base">
+    <section id="content">
+        <div class="container-fluid">
+            {% include 'layout/_flash.html.twig' %}
+            {% block body %}{% endblock %}
+        </div>
+    </section>
+</div>
+{% javascripts '@jquery' '@bootstrap_js' %}
+<script type="text/javascript" src="{{ asset_url }}"></script>
+<script type="text/javascript">
+    function sendResizeEvent() {
+        try {
+            parent.resizeCalendarEmbed($(document).height());
+        }
+        catch (e) { }
+
+        try {
+            VK.init();
+            VK.callMethod("resizeWindow", $(document).width(), $(document).height());
+        }
+        catch (e) { }
+    }
+    sendResizeEvent();
+    $(document).on('resize', sendResizeEvent);
+    $(window).on('resize', sendResizeEvent);
+</script>
+{% endjavascripts %}
+{% block javascripts %}{% endblock %}
+</body>
+</html>

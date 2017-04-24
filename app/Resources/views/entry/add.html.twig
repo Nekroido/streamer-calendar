@@ -1,0 +1,25 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}{% trans %}Entry for %day%.%month%.%year%{% endtrans %}{% endblock %}
+
+{% block body %}
+    {% include 'entry/_form.html.twig' %}
+{% endblock %}
+{% block stylesheets %}
+    {% stylesheets '@datepicker_css' '@timepicker_css' filter='cssrewrite' %}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}
+{% block javascripts %}
+    {% javascripts '@datepicker_js' '@timepicker_js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    <script type="text/javascript">
+        $('#entry_form_timeStart').prop('disabled', $('#entry_form_allDay').prop('checked'));
+        $('#entry_form_timeEnd').prop('disabled', $('#entry_form_allDay').prop('checked'));
+        $('#entry_form_allDay').change(function () {
+            $('#entry_form_timeStart').prop('disabled', $(this).prop('checked'));
+            $('#entry_form_timeEnd').prop('disabled', $(this).prop('checked'));
+        });
+    </script>
+{% endblock %}

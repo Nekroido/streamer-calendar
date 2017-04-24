@@ -30,9 +30,15 @@
 # Assets and user uploads
 /web/bundles/
 /web/uploads/
+/web/assetic/
+/web/css/
+/web/js/
+/web/images/avatars/
+/web/media/cache/
 
 # Assets managed by Bower
 /web/assets/vendor/
+/app/Resources/assets/vendor/
 
 # PHPUnit
 /app/phpunit.xml

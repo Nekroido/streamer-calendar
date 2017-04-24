@@ -1,0 +1,38 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}{% trans %}Edit account{% endtrans %}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h2>
+                {% trans %}Edit profile{% endtrans %}
+            </h2>
+            {{ form_start(form) }}
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+{% block stylesheets %}
+    {% stylesheets '@cropper_css' filter='cssrewrite' %}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}"/>
+    <style>
+        .cropper-canvas-container canvas, .cropper-canvas-container img { display: block; margin: 0 auto; max-width: 300px; }
+    </style>
+    {% endstylesheets %}
+{% endblock %}
+{% block javascripts %}
+    {% javascripts '@cropper_js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    <script type="text/javascript">
+        (function(w, $) {
+            'use strict';
+            $(function() {
+                $('.cropper').each(function() {
+                    new Cropper($(this));
+                });
+            });
+        })(window, jQuery);
+    </script>
+{% endblock %}

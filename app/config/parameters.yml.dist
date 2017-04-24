@@ -1,0 +1,14 @@
+# This file is auto-generated during the composer install
+parameters:
+    database_host: 127.0.0.1
+    database_port: null
+    database_name: streamerbase
+    database_user: root
+    database_password: null
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+    secret: n48xJ3Z2G8HCkMA6M4csC1tp2pV5i7Rw
+    recaptcha_public: 6LeDtigTAAAAAN5emwuAH84ZaNYRe0LKyOMPz768
+    recaptcha_secret: 6LeDtigTAAAAAI2kH1uUPo3WgK4etNvg6Y1UBz37

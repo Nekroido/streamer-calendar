@@ -1,0 +1,52 @@
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        {% if entry.id %}
+            <h2>{% trans with {'%day%': '%02d'|format(day), '%month%': '%02d'|format(month)} %}Edit entry for %day%.%month%.%year%{% endtrans %}</h2>
+        {% else %}
+            <h2>{% trans with {'%day%': '%02d'|format(day), '%month%': '%02d'|format(month)} %}Add entry for %day%.%month%.%year%{% endtrans %}</h2>
+        {% endif %}
+
+        {{ form_start(form) }}
+
+        {{ form_row(form.category) }}
+
+        {{ form_row(form.title) }}
+
+        <div class="row">
+            <div class="col-xs-6">
+                {{ form_row(form.dateStart) }}
+            </div>
+            <div class="col-xs-6">
+                {{ form_row(form.timeStart) }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-6">
+                {{ form_row(form.dateEnd) }}
+            </div>
+            <div class="col-xs-6">
+                {{ form_row(form.timeEnd) }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-6">
+                {{ form_row(form.allDay) }}
+            </div>
+            <div class="col-xs-6">
+                {{ form_row(form.isApproved) }}
+            </div>
+        </div>
+
+        {{ form_row(form.status) }}
+
+        {{ form_row(form.comment) }}
+
+        {{ form_row(form.description) }}
+        <span class="help-block">Короткий текст для ежедневного анонса</span>
+
+        {{ form_widget(form.submit) }}
+        {{ form_end(form) }}
+    </div>
+</div>

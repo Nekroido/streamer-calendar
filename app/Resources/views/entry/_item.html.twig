@@ -1,0 +1,22 @@
+{% set stream_name = [entry.author.name, entry.title]|join(' - ')|raw %}
+{% set can_edit = is_granted('ROLE_MANAGER') or (app.user is not null and app.user.id == entry.author.id) %}
+{% set entry_style = entry.status == 0 ? 'active' : (entry.status == 1 ? 'tentative' : 'canceled') %}
+<a class="agenda-item {{ entry_macro.entry_style(entry) }}"
+   data-id="{{ entry.id }}"
+   data-approved="{{ entry.isApproved == 1 }}"
+   data-date="{{ entry.start|date('Y-m-d') }}"
+   data-toggle="tooltip" data-placement="top" data-html="true"
+   title="{{ entry_macro.stream_name_tooltip(entry)|escape('html_attr') }}"
+   style="{% if is_granted('ROLE_STREAMER') == false %}background-color: #{{ entry.category.color }};{% endif %}
+           height: {{ ui_service.durationToHeight(entry) }}px;
+           width: {{ ui_service.treeToWidth(tree, entry) }}%;
+           margin-top: {{ ui_service.timeStartToOffset(entry.start) }}px;
+           margin-left: {{ ui_service.treeToOffsetLeft(tree, entry, index) }}%;"
+   href="{% if can_edit %}{{ path('edit_entry', {id : entry.id}) }}{% else %}{{ entry.category.url }}{% endif %}">
+    {% if is_granted('ROLE_STREAMER') %}
+        <i class="glyphicon"></i>
+    {% endif %}
+    <time datetime="{{ entry.start|date('Y-m-d\TH:i') }}">{{ entry.start|date('H:i') }}–{{ entry.end|date('H:i') }}</time>
+    {{ entry_macro.stream_name(entry,false)|escape }}
+    {{ (entry.comment ? '<br>' ~ 'Note'|trans ~ ': ' : '')|raw }}{{ entry.comment|escape }}
+</a>

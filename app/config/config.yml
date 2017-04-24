@@ -1,0 +1,245 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: security.yml }
+    - { resource: services.yml }
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: ru
+    invite_only: false
+    default_role: ROLE_USER
+    invited_role: ROLE_STREAMER
+    personal_streamkeys_only: false
+    vk_id: 123456
+    vk_token: "<VK token here>"
+    webhook_key: "<your secret webhook key>"
+
+framework:
+    #esi:             ~
+    translator:      { fallbacks: ["ru", "%locale%"] }
+    secret:          "%secret%"
+    router:
+        resource: "%kernel.root_dir%/config/routing.yml"
+        strict_requirements: ~
+    form:            ~
+    csrf_protection: ~
+    validation:      { enable_annotations: true }
+    #serializer:      { enable_annotations: true }
+    templating:
+        engines: ['twig']
+    default_locale:  "%locale%"
+    trusted_hosts:   ~
+    trusted_proxies: ~
+    session:
+        # http://symfony.com/doc/current/reference/configuration/framework.html#handler-id
+        handler_id:  session.handler.native_file
+        save_path:   "%kernel.root_dir%/../var/sessions/%kernel.environment%"
+    fragments:       ~
+    http_method_override: true
+    assets: ~
+
+# Twig Configuration
+twig:
+    debug:            "%kernel.debug%"
+    strict_variables: "%kernel.debug%"
+    form_themes:
+        - 'bootstrap_3_layout.html.twig'
+        - 'SonataCoreBundle:Form:datepicker.html.twig'
+        - "PrestaImageBundle:form:image_widget.html.twig"
+    globals:
+        recaptch_public: "%recaptcha_public%"
+        ui_service: "@app.ui_service"
+        invite_only: "%invite_only%"
+        personal_streamkeys_only: "%personal_streamkeys_only%"
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        driver:   pdo_mysql
+        host:     "%database_host%"
+        port:     "%database_port%"
+        dbname:   "%database_name%"
+        user:     "%database_user%"
+        password: "%database_password%"
+        charset:  UTF8
+
+        mapping_types:
+            date_interval: date_interval
+        types:
+            date_interval: AppBundle\Doctrine\DBAL\Types\DateIntervalType
+
+    orm:
+        auto_generate_proxy_classes: "%kernel.debug%"
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
+        dql:
+            datetime_functions:
+                DATE_INTERVAL: AppBundle\Doctrine\ORM\Query\AST\Functions\DateIntervalFunction
+            numeric_functions:
+                RAND: AppBundle\Doctrine\ORM\Query\AST\Functions\RandFunction
+
+# Swiftmailer Configuration
+swiftmailer:
+    transport: "%mailer_transport%"
+    host:      "%mailer_host%"
+    username:  "%mailer_user%"
+    password:  "%mailer_password%"
+    spool:     { type: memory }
+
+# Assets
+assetic:
+    debug:          "%kernel.debug%"
+    use_controller: false
+    bundles:        ["AppBundle"]
+
+    filters:
+        cssrewrite: ~
+    assets:
+        admin_css:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/styles/admin.css"
+            filters: [cssrewrite]
+
+        base_css:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/styles/base.css"
+            filters: [cssrewrite]
+        base_js:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/js/app.js"
+        calendar_css:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/styles/calendar.css"
+            filters: [cssrewrite]
+        cropper_css:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/styles/cropper.min.css"
+                - "@PrestaImageBundle/Resources/public/css/cropper.css"
+            filters: [cssrewrite]
+        cropper_js:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/js/cropper.min.js"
+                - "@PrestaImageBundle/Resources/public/js/cropper.js"
+
+        bootstrap_js:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/vendor/bootstrap-sass/assets/javascripts/bootstrap.min.js"
+                - "%kernel.root_dir%/Resources/assets/vendor/bootstrap-toggle/js/bootstrap-toggle.min.js"
+
+        bootstrap_css:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/styles/bootstrap.css"
+                - "%kernel.root_dir%/Resources/assets/vendor/bootstrap-toggle/css/bootstrap-toggle.min.css"
+            filters: [cssrewrite]
+
+        datepicker_css:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css"
+            filters: [cssrewrite]
+
+        datepicker_js:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"
+                - "%kernel.root_dir%/Resources/assets/vendor/bootstrap-datepicker/dist/locales/bootstrap-datepicker.ru.min.js"
+
+        timepicker_css:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/styles/timepicker.css"
+            filters: [cssrewrite]
+
+        timepicker_js:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/vendor/bootstrap-timepicker/js/bootstrap-timepicker.js"
+
+        highcharts_css:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/vendor/highcharts/css/highcharts.css"
+            filters: [cssrewrite]
+        highcharts_js:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/vendor/highcharts/js/highcharts.src.js"
+
+        bootstrap_glyphicons_ttf:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/vendor/bootstrap-sass/assets/fonts/bootstrap/glyphicons-halflings-regular.ttf"
+            output: "fonts/bootstrap/glyphicons-halflings-regular.ttf"
+
+        bootstrap_glyphicons_eot:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/vendor/bootstrap-sass/assets/fonts/bootstrap/glyphicons-halflings-regular.eot"
+            output: "fonts/bootstrap/glyphicons-halflings-regular.eot"
+
+        bootstrap_glyphicons_svg:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/vendor/bootstrap-sass/assets/fonts/bootstrap/glyphicons-halflings-regular.svg"
+            output: "fonts/bootstrap/glyphicons-halflings-regular.svg"
+
+        bootstrap_glyphicons_woff:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/vendor/bootstrap-sass/assets/fonts/bootstrap/glyphicons-halflings-regular.woff"
+            output: "fonts/bootstrap/glyphicons-halflings-regular.woff"
+
+        bootstrap_glyphicons_woff2:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/vendor/bootstrap-sass/assets/fonts/bootstrap/glyphicons-halflings-regular.woff2"
+            output: "fonts/bootstrap/glyphicons-halflings-regular.woff2"
+
+        jquery:
+            inputs:
+                - "%kernel.root_dir%/Resources/assets/vendor/jquery/dist/jquery.min.js"
+
+# KNP Menu
+knp_menu:
+    providers:
+        builder_alias: true
+        builder_service: false
+
+# Sonata
+sonata_admin:
+    title: Управление
+    title_logo: favicon.png
+    templates:
+            layout: AppBundle::admin_layout.html.twig
+
+sonata_block:
+    default_contexts: [framework]
+    blocks:
+        # enable the SonataAdminBundle block
+        sonata.admin.block.admin_list:
+            contexts: [admin]
+
+# Vich Uploader
+vich_uploader:
+    db_driver: orm
+
+    mappings:
+        avatar_image:
+            uri_prefix:         /images/avatars
+            upload_destination: '%kernel.root_dir%/../web/images/avatars'
+
+            inject_on_load:     true
+            delete_on_update:   true
+            delete_on_remove:   true
+
+# Image resize
+liip_imagine:
+    # configure resolvers
+    resolvers:
+        # setup the default resolver
+        default:
+            # use the default web path
+            web_path: ~
+    # your filter sets are defined here
+    filter_sets:
+        # use the default cache configuration
+        cache: ~
+
+        micro:
+            quality: 100
+            filters:
+                thumbnail: { size : [2, 2], mode : outbound }
+        avatar:
+            quality: 100
+            filters:
+                thumbnail: { size : [140, 140], mode : outbound }

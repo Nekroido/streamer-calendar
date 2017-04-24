@@ -1,0 +1,63 @@
+# Learn more about services, parameters and containers at
+# http://symfony.com/doc/current/book/service_container.html
+parameters:
+#    parameter_name: value
+
+services:
+    app.event_service:
+        class: AppBundle\Services\EventService
+        arguments: [ "@doctrine.orm.entity_manager" ]
+    app.token_service:
+        class: AppBundle\Services\TokenService
+        arguments: [ "@doctrine.orm.entity_manager" ]
+    app.strike_service:
+        class: AppBundle\Services\StrikeService
+        arguments: [ "@doctrine.orm.entity_manager", "@security.authorization_checker" ]
+    app.user_service:
+        class: AppBundle\Services\UserService
+        arguments: [ "@doctrine.orm.entity_manager" ]
+    app.vk_service:
+        class: AppBundle\Services\VkService
+        arguments: [ "@app.event_service", '%vk_id%', '%vk_token%' ]
+    app.dashboard_service:
+        class: AppBundle\Services\DashboardService
+        arguments: [ "@doctrine.orm.entity_manager" ]
+
+    app.ui_service:
+        class: AppBundle\Services\UiService
+        arguments: [ "@app.event_service" ]
+
+    app.twig_extension:
+        class: AppBundle\Extensions\TwigExtension
+        public: false
+        tags:
+            - { name: twig.extension }
+
+    app.registration_form:
+        class: AppBundle\Form\RegistrationForm
+        calls:
+            - [setInviteOnly, ['%invite_only%']]
+            - [setTokeService, ['@app.token_service']]
+        tags:
+            - { name: form.type }
+# Admin
+    admin.users:
+        class: AppBundle\Admin\UserAdmin
+        arguments: [~, AppBundle\Entity\User, AppBundle:UserCRUD]
+        tags:
+            - { name: sonata.admin, manager_type: orm, property: model.name, label: Users }
+    admin.tokens:
+        class: AppBundle\Admin\TokenAdmin
+        arguments: [~, AppBundle\Entity\Token, AppBundle:TokenCRUD]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Tokens }
+    admin.info:
+        class: AppBundle\Admin\InfoAdmin
+        arguments: [~, AppBundle\Entity\Info, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Information for streamers }
+    admin.strikes:
+        class: AppBundle\Admin\StrikeAdmin
+        arguments: [~, AppBundle\Entity\Strike, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Strikes }

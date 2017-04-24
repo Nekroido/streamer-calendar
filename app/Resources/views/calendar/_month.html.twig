@@ -1,0 +1,94 @@
+{% import "macros/entry.twig" as entry_macro %}
+
+<div class="calendar-actions">
+    <div class="btn-group">
+        <a class="btn btn-primary" href="{{ path(isEmbed ? 'embed' : 'homepage', {month: prev|date('n'), year: prev|date('Y') }) }}"><i
+                    class="glyphicon glyphicon-chevron-left"></i></a>
+        <a class="btn btn-primary" href="{{ path(isEmbed ? 'embed' : 'homepage', {month: next|date('n'), year: next|date('Y') }) }}"><i
+                    class="glyphicon glyphicon-chevron-right"></i></a>
+    </div>
+    <div class="btn-group">
+        <a class="btn btn-primary" href="{{ path('calendar_export') }}"><i class="glyphicon glyphicon-calendar"></i> Экспорт</a>
+    </div>
+    <div class="btn-group pull-right">
+        {% if is_granted('ROLE_USER') == false %}
+            <a class="btn btn-primary" href="{{ path('login') }}" target="_parent">Вход</a>
+        {% endif %}
+        {% if is_granted('ROLE_STREAMER') %}
+            <a class="btn btn-primary" href="{{ path('add_entry') }}" target="_parent"><i class="glyphicon glyphicon-plus"></i> Создать
+                запись</a>
+        {% endif %}
+    </div>
+</div>
+
+<table class="table table-bordered calendar-month {% if user|length > 0 %}for-user{% endif %}">
+    <thead>
+    <tr class="month">
+        <td colspan="7">
+            {{ month|monthName }}
+            <span>{{ year }}</span>
+        </td>
+    </tr>
+    <tr class="weekday">
+        {% for column in range.0 %}
+            <td>{{ column|date('D')|weekdayShort }}</td>
+        {% endfor %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in range %}
+        <tr>
+            {% for column in row %}
+                <td class="{% if column|date('m-d') == today|date('m-d') %}current{% endif %} {% if column|date('n') != month %}inactive{% endif %} {% if column|date('D')|isWeekend == true %}weekend{% endif %}">
+                    <a href="{{ path('calendar_entry', { 'day' : column|date('j'), 'month' : column|date('n'), 'year' : column|date('Y') }) }}">
+                        {{ column|date('j') }}
+                    </a>
+                    <ul>
+                        {% if dayEntries[column|date('m-d')] is defined %}
+                            {% for entry in dayEntries[column|date('m-d')] %}
+                                {% set can_edit = is_granted('ROLE_MANAGER') or (app.user is not null and app.user.id == entry.author.id) %}
+                                <li {% if is_granted('ROLE_STREAMER') == false %}style="background-color: #{{ entry.category.color }};"{% endif %}
+                                    class="agenda-item all-day {{ entry_macro.entry_style(entry) }}{% if user == entry.author.name %} current-user{% endif %}"
+                                    data-id="{{ entry.id }}"
+                                    data-approved="{{ entry.isApproved == 1 }}">
+                                    <a href="{% if can_edit %}{{ path('edit_entry', {id : entry.id}) }}{% else %}{{ entry.category.url }}{% endif %}"
+                                       title="{{ entry_macro.stream_name_tooltip(entry)|escape('html_attr') }}"
+                                       data-toggle="tooltip" data-placement="top" data-html="true" target="_parent">
+                                        {% if is_granted('ROLE_STREAMER') %}
+                                            <i class="glyphicon"></i>
+                                        {% endif %}
+                                        {{ entry_macro.stream_name(entry)|escape }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+                        {% if entries[column|date('m-d')] is defined %}
+                            {% for entry in entries[column|date('m-d')] %}
+                                {% set can_edit = is_granted('ROLE_MANAGER') or (app.user is not null and app.user.id == entry.author.id) %}
+                                <li {% if is_granted('ROLE_STREAMER') == false %}style="background-color: #{{ entry.category.color }};"{% endif %}
+                                    class="agenda-item {{ entry_macro.entry_style(entry) }}{% if user == entry.author.name %} current-user{% endif %}"
+                                    data-id="{{ entry.id }}"
+                                    data-approved="{{ entry.isApproved == 1 }}">
+                                    <a href="{% if can_edit %}{{ path('edit_entry', {id : entry.id}) }}{% else %}{{ entry.category.url }}{% endif %}"
+                                       title="{{ entry_macro.stream_name_tooltip(entry)|escape('html_attr') }}"
+                                       data-toggle="tooltip" data-placement="top" data-html="true" target="_parent">
+                                        {% if is_granted('ROLE_STREAMER') %}
+                                            <i class="glyphicon"></i>
+                                        {% endif %}
+                                        <time datetime="{{ entry.start|date('Y-m-d\TH:i') }}">
+                                            {{ entry.start|date('H:i') }}–{{ entry.end|date('H:i') }}
+                                        </time>
+                                        <br>
+                                        {{ entry_macro.stream_name(entry)|escape }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% include 'entry/_managerMenu.html.twig' %}

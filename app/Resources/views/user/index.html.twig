@@ -1,0 +1,127 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}{% trans %}Account{% endtrans %}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">{% trans %}Upcoming streams{% endtrans %}</div>
+                <div class="panel-body">
+                    {% if entries|length == 0 %}
+                        {% trans %}There are no upcoming streams yet.{% endtrans %}
+                    {% else %}
+                        {% for day in entries %}
+                            <h4>{{ (day|first).start|date('d.m') }}</h4>
+                            {% for entry in day %}
+                                <div class="agenda-item">
+                                    <time datetime="{{ entry.start|date('Y-m-d\TH:i') }}">{{ entry.start|date('H:i') }}</time>
+                                    {{ entry.title|escape }}
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <a href="{{ path('add_entry') }}" class="btn btn-primary btn-block">{% trans %}Create entry{% endtrans %}</a>
+                    </li>
+                </ul>
+            </div>
+            {% if strikes %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">{% trans %}My strikes{% endtrans %}</div>
+                    <table class="table table-striped strike-list">
+                        {% for strike in strikes %}
+                            {% set is_expired = 'now'|date('U') > strike.expires|date('U') %}
+                            <tr class="{% if is_expired %}status-expired{% endif %}">
+                                <th>{{ strike.severityReadable|trans }}</th>
+                                <td>
+                                    {% if strike.reason %}<p>{{ strike.reason }}</p>{% endif %}
+                                    {% if is_expired %}
+                                        {% trans %}Expired{% endtrans %}
+                                    {% else %}
+                                        <i>
+                                            {% trans with {'%date%': strike.issuedOn|date('d.m.y H:i')} %}Issued on: %date%{% endtrans %}
+                                            <br/>
+                                            {% trans with {'%date%': strike.expires|date('d.m.y H:i')} %}Expires: %date%{% endtrans %}
+                                        </i>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">{% trans %}My account{% endtrans %}</div>
+                <table class="table table-striped">
+                    <tr>
+                        <th>{% trans %}Username{% endtrans %}</th>
+                        <td>{{ user.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans %}Email{% endtrans %}</th>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans %}Name{% endtrans %}</th>
+                        <td>{{ user.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans %}Registered{% endtrans %}</th>
+                        <td>{{ user.registered|date('d.m.Y') }}</td>
+                    </tr>
+                    {% if user.donationUrl %}
+                        <tr>
+                            <th>{% trans %}Donation url{% endtrans %}</th>
+                            <td>{{ user.donationUrl }}</td>
+                        </tr>
+                    {% endif %}
+                </table>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <a href="{{ path('user_edit') }}" class="btn btn-primary btn-block">{% trans %}Edit{% endtrans %}</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">{% trans %}My info{% endtrans %}</div>
+                <table class="table table-striped">
+                    <tr>
+                        <td colspan="2">
+                            <img src="{{ vich_uploader_asset(user, 'imageFile') | imagine_filter('avatar') }}" style="display: block; margin: 0 auto; max-width: 300px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{% trans %}Pseudonyms{% endtrans %}</th>
+                        <td>{{ user.pseudonyms }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans %}Likes{% endtrans %}</th>
+                        <td>{{ user.likes }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans %}Preferred platforms{% endtrans %}</th>
+                        <td>{{ user.preferredPlatforms }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans %}About{% endtrans %}</th>
+                        <td>{{ user.about }}</td>
+                    </tr>
+                    <tr>
+                        <th>{% trans %}Motto{% endtrans %}</th>
+                        <td>{{ user.motto }}</td>
+                    </tr>
+                </table>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <a href="{{ path('profile_edit') }}" class="btn btn-primary btn-block">{% trans %}Edit{% endtrans %}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

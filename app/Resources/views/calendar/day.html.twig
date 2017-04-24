@@ -1,0 +1,94 @@
+{% extends 'layout/base.html.twig' %}
+{% import "macros/entry.twig" as entry_macro %}
+
+{% block title %}{% trans with {'%day%' : '%02d'|format(day),'%month%' : '%02d'|format(month)} %}Schedule for %day%.%month%.%year%{% endtrans %}{% endblock %}
+
+{% block body %}
+    <div class="calendar-actions">
+        {% if is_granted('ROLE_STREAMER') %}
+            <div class="btn-group pull-right">
+                <a class="btn btn-primary"
+                   href="{{ path('add_entry', { 'day' : day, 'month' : month, 'year' : year }) }}"><i
+                            class="glyphicon glyphicon-plus"></i> {% trans %}Create entry{% endtrans %}</a>
+            </div>
+        {% endif %}
+    </div>
+    <div class="calendar-day">
+        <table>
+            <thead>
+            <tr>
+                <td colspan="2">
+                    {{ today|date('D')|weekday }}
+                    <span>{% trans with {'%day%' : '%02d'|format(day),'%month%' : '%02d'|format(month)} %}Schedule for %day%.%month%.%year%{% endtrans %}</span>
+                </td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="day-events {% if dayEntries %}visible{% else %}hidden{% endif %}">
+                <td></td>
+                <td>
+                    {% for entry in dayEntries %}
+                        {% set can_edit = is_granted('ROLE_MANAGER') or (app.user is not null and app.user.id == entry.author.id) %}
+                        <a class="agenda-item {{ entry_macro.entry_style(entry) }}"
+                           style="{% if is_granted('ROLE_STREAMER') == false %}background-color: #{{ entry.category.color }};{% endif %}"
+                           data-id="{{ entry.id }}" data-date="{{ entry.start|date('Y-m-d') }}"
+                           data-toggle="tooltip" data-placement="top"
+                           title="{{ entry_macro.stream_name(entry, true)|escape('html_attr') }}"
+                           href="{% if can_edit %}{{ path('edit_entry', {id : entry.id}) }}{% else %}{{ entry.category.url }}{% endif %}">
+                            {% if is_granted('ROLE_STREAMER') %}
+                                <i class="glyphicon"></i>
+                            {% endif %}
+                            {{ entry_macro.stream_name(entry)|escape }}
+                        </a>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% for h in 0 .. 23 %}
+                <tr class="time-table">
+                    <td class="time" rowspan="2">
+                        <a name="{{ '%02d'|format(h) }}"></a>
+                        <div>{{ '%02d'|format(h) }}:00</div>
+                    </td>
+                    <td class="agenda">
+                        {% if entries[h] is defined %}
+                            {% for index, entry in entries[h] %}
+                                {% include 'entry/_item.html.twig' %}
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="agenda"></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div id="current-time">
+            <time></time>
+            <span class="cursor"></span>
+        </div>
+    </div>
+    {% include 'entry/_managerMenu.html.twig' %}
+{% endblock %}
+{% block javascripts %}
+    {% javascripts '@base_js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    <script type="text/javascript">
+        {% if entries|first and entries|first|first %}
+        {#$('html, body').animate({#}
+            {#scrollTop: $("a[name={{ (entries|first|first).start.format('H') }}]").offset().top#}
+        {#}, 2000);#}
+        location.hash = '#{{ (entries|first|first).start.format('H') }}';
+        {% endif %}
+        var calendarDayDate = new Date({{ today|date('U') * 1000 }});
+        CalendarHelper.initTimeCursor({{ "now"|date('U') * 1000 }});
+        {% if is_granted('ROLE_MANAGER') %}
+        CalendarHelper.initContextMenu();
+        {% endif %}
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        })
+    </script>
+{% endblock %}

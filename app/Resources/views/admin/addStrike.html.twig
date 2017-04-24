@@ -1,0 +1,21 @@
+{% extends 'AppBundle::admin_layout.html.twig' %}
+
+{% block sonata_admin_content %}
+    <div class="box box-primary">
+        <div class="box-header">
+            <h4 class="box-title">{% trans with {'%name%': user.name} %}Add strike for %name%{% endtrans %}</h4>
+        </div>
+        <div class="box-body">
+            {{ form_start(form) }}
+            {{ form_row(form.streamer) }}
+            {{ form_row(form.severity) }}
+            {{ form_row(form.expires) }}
+            {{ form_row(form.reason) }}
+            {{ form_end(form) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+        </div>
+    </div>
+{% endblock %}

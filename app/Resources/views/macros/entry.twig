@@ -1,0 +1,31 @@
+{% macro stream_name(entry, show_comment) %}{% spaceless %}
+    {% set stream_name = [entry.author.name, entry.title]|join(' - ')|raw %}
+    {% if entry.comment and show_comment %}{% set stream_name = stream_name  ~ ' (' ~ entry.comment ~ ')'|raw %}{% endif %}
+    {% set stream_prefix = entry.status == 0 ? '' : (entry.status == 1 ? 'Tentative'|trans : 'Cancelled'|trans) %}
+    {% if stream_prefix %}{% set stream_name = '(' ~ stream_prefix ~ ') ' ~ stream_name|raw %}{% endif %}
+    {{ stream_name|raw }}
+{% endspaceless %}{% endmacro %}
+{% macro stream_name_tooltip(entry) %}{% spaceless %}
+    {% set stream_prefix = '' %}
+    {% set stream_suffix = '' %}
+    {% set stream_name = [entry.author.name, entry.title]|join(' - ')|raw %}
+    {% if is_granted('ROLE_STREAMER') %}
+        {% if entry.isApproved == false %}
+            {% set stream_suffix = '[' ~ 'Pending'|trans ~'] ' %}
+        {% else %}
+            {% set stream_suffix = '[' ~ 'Approved'|trans ~'] ' %}
+        {% endif %}
+    {% endif %}
+    {% if entry.allDay %}{% set stream_name = '(' ~ 'All day'|trans ~') ' ~ stream_name|raw %}{% endif %}
+    {% set stream_prefix = entry.status == 0 ? '' : '(' ~ (entry.status == 1 ? 'Tentative'|trans : 'Cancelled'|trans) ~ ') ' %}
+    {% if is_granted('ROLE_MANAGER') %}
+        {% set stream_suffix = stream_suffix ~ 'Added'|trans ~ ': ' ~ entry.added|date('d.m.Y H:i') %}
+    {% endif %}
+    {{ stream_prefix|raw }}
+    {{ stream_name }}
+    {{ (entry.comment ? '<br>' ~ 'Note'|trans ~ ': ' : '')|raw }}{{ entry.comment }}
+    {{ (stream_suffix ? '<br>' ~ stream_suffix : '')|raw }}
+{% endspaceless %}{% endmacro %}
+{% macro entry_style(entry) %}{% spaceless %}
+    {{ is_granted('ROLE_STREAMER') ? 'extended' : '' }} {{ entry.category.color|detectBrightness }} {{ 'status-' ~ (entry.status == 0 ? 'active' : (entry.status == 1 ? 'tentative' : 'cancelled')) }} {{ entry.isApproved ? 'approved' : '' }}
+{% endspaceless %}{% endmacro %}

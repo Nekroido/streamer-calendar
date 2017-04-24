@@ -1,0 +1,513 @@
+@import "../vendor/bootstrap-sass/assets/stylesheets/bootstrap/_variables";
+@import "variables";
+@import "mixins";
+
+.calendar-actions {
+  margin: 0 0 20px;
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+.strike-list {
+  tr {
+    td,th {
+      background: $brand-warning;
+    }
+    &.status-expired {
+      td,th {
+        background: $brand-success;
+      }
+    }
+  }
+}
+
+table.calendar-month {
+  border: 1px solid #333;
+
+  &.for-user {
+    tr {
+      td {
+        ul {
+          li {
+            opacity: 0.7;
+          }
+        }
+      }
+    }
+  }
+
+  tr {
+    &.month {
+      td {
+        background: $color-main;
+        color: #fff;
+        font-size: 18px;
+        padding: 8px;
+
+        > span {
+          float: right;
+        }
+      }
+    }
+
+    &.weekday {
+      td {
+        //border-right-color: transparent;
+        //background: lighten($color-main, 20%);
+        color: $color-main;
+        text-align: center;
+        padding: 8px;
+
+        &:last-child {
+          border-right-color: #333;
+        }
+      }
+    }
+
+    td {
+      border: 1px solid #333;
+      font-weight: bold;
+      text-align: left;
+      padding: 0;
+
+      min-width: 36px;
+      //min-height: 200px;
+
+      &.current {
+        background: $color-main;
+        padding: 0 0 12px;
+      }
+
+      @media (max-width: $screen-xs-max) {
+        min-height: 36px;
+        position: relative;
+      }
+
+      a {
+        color: #333;
+        display: block;
+        padding: 8px;
+
+        &:focus, &:hover {
+          background: $color-main;
+          color: #fff !important;
+          text-decoration: none;
+        }
+      }
+
+      > ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        @media (max-width: $screen-xs-max) {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+        }
+
+        li {
+          background: $color-main;
+          display: block;
+          height: 48px;
+          position: relative;
+
+          @media (max-width: $screen-xs-max) {
+            @include border-radius(99px);
+            float: right;
+            margin: 0 0 0 2px;
+            overflow: hidden;
+            height: 4px;
+            width: 4px;
+
+            a {
+              display: none;
+            }
+          }
+
+          &.dark {
+            a {
+              color: #fff;
+            }
+          }
+          &.light {
+            a {
+              color: #333;
+            }
+          }
+
+          &.all-day {
+            a {
+              background: url('images/bg_stripes.png');
+            }
+          }
+
+          &.status-active {
+            background: $brand-success;
+          }
+          &.status-tentative {
+            background: $brand-warning;
+          }
+          &.status-cancelled {
+            background: $brand-danger;
+            a {
+              background: url('images/bg_cross.png');
+              text-decoration: line-through;
+            }
+          }
+          a i.glyphicon:before {
+            content: '\e023';
+          }
+          &.approved {
+            a i.glyphicon:before {
+              content: '\e013';
+            }
+          }
+
+          &.current-user {
+            margin: -6px;
+            opacity: 1;
+            -webkit-box-shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
+            -moz-box-shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
+            z-index: 9;
+          }
+
+          a {
+            font-size: 11px;
+            font-weight: normal;
+            display: block;
+            height: 48px;
+            overflow: hidden;
+            position: absolute;
+            text-overflow: ellipsis;
+            width: 100%;
+            white-space: nowrap;
+
+            time {
+              font-weight: bold;
+            }
+          }
+        }
+      }
+
+      &.weekend {
+        > a {
+          color: $color-main;
+
+          &:focus, &:hover {
+            background: $color-main;
+            color: #fff;
+            text-decoration: none;
+          }
+        }
+      }
+
+      &.inactive {
+        a {
+          color: #999;
+
+          &:focus, &:hover {
+            color: #fff;
+          }
+        }
+      }
+
+      &.week-number {
+        background: $color-main;
+        color: #fff;
+        text-align: center;
+        padding: 8px;
+        min-width: inherit;
+        width: 50px;
+      }
+    }
+  }
+
+  &.vertical {
+    tr {
+      &.week-number {
+        td {
+          border-right-color: transparent;
+          //background: @color-main;
+          //color: #fff;
+          text-align: center;
+          padding: 2px;
+
+          &:last-child {
+            border-right-color: #333;
+          }
+        }
+      }
+
+      td {
+        &.weekday {
+          background: $color-main;
+          color: #fff;
+          text-align: center;
+          padding: 8px;
+          min-width: inherit;
+          vertical-align: middle;
+          width: 50px;
+        }
+      }
+    }
+  }
+
+  tbody {
+    td {
+      height: 120px;
+
+      @media (max-width: $screen-xs-max) {
+        height: inherit;
+      }
+    }
+  }
+}
+
+.calendar-day {
+  position: relative;
+
+  #current-time {
+    display: none;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+    z-index: 999;
+
+    > time {
+      background: darken($color-main, 20%);
+      @include box-shadow(0 5px 5px -3px rgba(50, 50, 50, 0.5));
+      color: #fff;
+      font-size: 12px;
+      padding: 6px;
+      position: absolute;
+      left: -5px;
+      margin-top: -12px;
+    }
+
+    > .cursor {
+      border: 1px solid darken($color-main, 20%);
+      @include box-shadow(0 5px 5px -3px rgba(50, 50, 50, 0.5));
+      display: block;
+    }
+  }
+
+  > table {
+    border: 1px solid #333;
+    border-collapse: collapse;
+    width: 100%;
+
+    thead {
+      td {
+        background: $color-main;
+        color: #fff;
+        font-size: 18px;
+        padding: 8px;
+
+        > span {
+          float: right;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        td {
+        }
+
+        &.time-table {
+          td {
+            border: 1px solid #333;
+            vertical-align: top;
+
+            &:nth-child(even) {
+              border-bottom-style: dotted;
+            }
+
+            &.time {
+              border-style: solid;
+              width: 42px;
+
+              > div {
+                font-size: 10px;
+                height: 41px;
+                padding: 4px;
+                text-align: center;
+              }
+            }
+
+            &.agenda {
+              position: relative;
+
+              > .agenda-item {
+                background: $color-main;
+                border-left: 3px solid rgba(0, 0, 0, 0.3);
+                @include box-shadow(0 0px 8px 1px rgba(50, 50, 50, 0.5));
+                color: #fff;
+                cursor: pointer;
+                display: block;
+                //outline: 1px solid darken(@color-main, 10%);
+                font-size: 12px;
+                padding: 2px;
+                position: absolute;
+                text-decoration: none;
+                z-index: 1;
+
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+
+                > time {
+                  font-weight: bold;
+                }
+
+                &.light {
+                  color: #333;
+                }
+                &.dark {
+                  color: #fff;
+                }
+
+                i.glyphicon:before {
+                  content: '\e023';
+                }
+                &.approved {
+                  i.glyphicon:before {
+                    content: '\e013';
+                  }
+                }
+
+                &.status-active {
+                  background-color: $brand-success;
+                }
+                &.status-tentative {
+                  background-color: $brand-warning;
+                }
+                &.status-cancelled {
+                  background-color: $brand-danger;
+                  background-image: url('images/bg_cross.png');
+                  text-decoration: line-through;
+                }
+              }
+            }
+          }
+        }
+
+        &.day-events {
+          td {
+            border-top: 1px solid #666;
+            vertical-align: top;
+
+            > .agenda-item {
+              background: lighten($color-main, 30%);
+              background-image: url('images/bg_stripes.png');
+              border-left: 3px solid rgba(255, 255, 255, 0.3);
+              color: #333;
+              cursor: pointer;
+              display: block;
+              font-size: 14px;
+              margin: 2px 2px 2px;
+              padding: 8px;
+              text-decoration: none;
+
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+
+              &.light {
+                color: #333;
+              }
+              &.dark {
+                color: #fff;
+              }
+
+              i.glyphicon:before {
+                content: '\e023';
+              }
+              &.approved {
+                i.glyphicon:before {
+                  content: '\e013';
+                }
+              }
+
+              &.status-active {
+                background-color: $brand-success;
+              }
+              &.status-tentative {
+                background-color: $brand-warning;
+              }
+              &.status-cancelled {
+                background-color: $brand-danger;
+                background-image: url('images/bg_cross.png');
+                text-decoration: line-through;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+#context-menu {
+  background: #333;
+  display: none;
+  position: absolute;
+  z-index: 10;
+
+  @include box-shadow(0 4px 6px 1px rgba(50, 50, 50, 0.5));
+
+  &.visible {
+    display: block;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      a {
+        color: #fff;
+        cursor: pointer;
+        display: block;
+        padding: 8px 12px 8px 8px;
+        text-decoration: none;
+
+        .glyphicon {
+          margin: 0 4px 0 0;
+        }
+
+        &:hover, &:focus {
+          background: #666;
+        }
+      }
+    }
+  }
+}
+
+/** Datepicker styling */
+.datepicker-dropdown {
+  padding: 5px;
+}
+
+.datepicker table tr td.active:active, .datepicker table tr td.active.highlighted:active, .datepicker table tr td.active.active, .datepicker table tr td.active.highlighted.active, .open > .dropdown-toggle.datepicker table tr td.active, .open > .dropdown-toggle.datepicker table tr td.active.highlighted,
+.datepicker table tr td span.active, .datepicker table tr td span.active.disabled, .datepicker table tr td span.active.disabled:hover, .datepicker table tr td span.active:hover {
+  background: $color-main;
+  &:hover {
+    background: $color-main;
+  }
+}
+
+.datepicker table tr td.today, .datepicker table tr td.today.disabled, .datepicker table tr td.today.disabled:hover, .datepicker table tr td.today:hover {
+  background: #ffdb99;
+}
+
+.datepicker td, .datepicker th,
+.datepicker table tr td span {
+  @include border-radius(0);
+}
